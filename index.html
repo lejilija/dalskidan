@@ -17,7 +17,7 @@
             --dark-grey: #4a5568;
             --black: #000000;
             --light-grey: #a0aec0; /* Behålls för UI */
-            --snow-white: #ffffff; /* Vit för halsduk */
+            --snow-white: #ffffff; /* Vit för halsduk & pilar */
             --off-white: #f0f0f0;
             --sky-blue: #bee3f8;
             --yellow: #ffcc00; /* För poängknapp */
@@ -58,6 +58,9 @@
             cursor: pointer;
             z-index: 100;
             transition: all 0.1s ease;
+            /* Behåll text-align center ifall vi använder text-ikoner igen */
+             text-align: center;
+             line-height: 1; /* Justera för ikon-centrering */
         }
         #scoreboard-button { right: 15px; background-color: var(--yellow); }
         #play-again-button { left: 15px; background-color: var(--primary-blue); color: var(--snow-white); }
@@ -175,8 +178,61 @@
 
         /* Kontroller - Ny layout */
         .controls { /* ... (samma som innan) ... */ display: grid; grid-template-columns: repeat(3, auto); grid-template-rows: auto auto; gap: 8px; width: auto; justify-items: center; margin-bottom: 20px; display: none; }
-        .control-button { /* ... (samma som innan) ... */ display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; background-color: var(--dark-grey); color: white; border: 3px solid var(--black); border-radius: 0; font-size: 24px; cursor: pointer; box-shadow: 3px 3px 0px var(--black); transition: all 0.1s ease; user-select: none; -webkit-user-select: none; -ms-user-select: none; }
+        .control-button {
+            display: flex; /* Behåll flex för ev. framtida ikoncentrering */
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background-color: var(--dark-grey);
+            color: white; /* Färgen på pilen sätts i ::before */
+            border: 3px solid var(--black);
+            border-radius: 0;
+            /* font-size behövs ej för CSS-pilar */
+            cursor: pointer;
+            box-shadow: 3px 3px 0px var(--black);
+            transition: all 0.1s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            position: relative; /* För att positionera ::before */
+            overflow: hidden; /* Dölj ev. delar av pilen som går utanför */
+        }
         .control-button:active { /* ... (samma som innan) ... */ box-shadow: 0px 0px 0px var(--black); transform: translate(3px, 3px); background-color: #2d3748; }
+
+        /* CSS-pil (triangel) */
+        .control-button::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            /* Centrera pilen */
+            top: 50%;
+            left: 50%;
+            /* Standardpil pekar höger */
+            border-top: 10px solid transparent; /* Justera storlek här */
+            border-bottom: 10px solid transparent;
+            border-left: 15px solid var(--snow-white); /* Pilens färg */
+            border-right: 0;
+            /* Startposition för transform */
+            transform: translate(-50%, -50%);
+        }
+
+        /* Rotera pilen för olika riktningar */
+        #left-button::before {
+            transform: translate(-50%, -50%) rotate(180deg);
+        }
+        #up-button::before {
+             /* Justera translate för upp/ner pga triangelns bas */
+            transform: translate(-50%, -60%) rotate(-90deg);
+        }
+        #down-button::before {
+             /* Justera translate för upp/ner pga triangelns bas */
+            transform: translate(-50%, -40%) rotate(90deg);
+        }
+
+
+        /* Grid placering för ny layout */
         #left-button { grid-column: 1; grid-row: 1; } #up-button { grid-column: 2; grid-row: 1; } #right-button { grid-column: 3; grid-row: 1; } #down-button { grid-column: 2; grid-row: 2; }
 
         /* Footer */
@@ -241,8 +297,10 @@
     </div>
 
     <div class="controls" id="touch-controls">
-        <button class="control-button" id="up-button">^</button>
-        <button class="control-button" id="left-button">&lt;</button> <button class="control-button" id="right-button">&gt;</button> <button class="control-button" id="down-button">v</button>
+        <button class="control-button" id="up-button"></button>
+        <button class="control-button" id="left-button"></button>
+        <button class="control-button" id="right-button"></button>
+        <button class="control-button" id="down-button"></button>
     </div>
 
     <div id="scoreboard-modal">
