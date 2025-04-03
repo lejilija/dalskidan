@@ -16,15 +16,13 @@
             --primary-blue: #3b82f6; /* Blå för halsduk */
             --dark-grey: #4a5568;
             --black: #000000;
-            --light-grey: #a0aec0;
+            --light-grey: #a0aec0; /* Behålls för UI */
             --snow-white: #ffffff; /* Vit för halsduk */
             --off-white: #f0f0f0;
             --sky-blue: #bee3f8;
-            --yellow: #ffcc00;
+            --yellow: #ffcc00; /* För poängknapp */
             --dark-yellow: #eab308;
-            --orange: #ff7f00; /* Behålls ifall vi vill ha tillbaka */
-            --dark-orange: #cc6600;
-            --pixel-art-blue: #00bfff; /* Behålls ifall vi vill ha tillbaka */
+            /* Orange, Blå nyanser, Gröna nyanser etc borttagna då de inte används */
         }
 
         /* Grundläggande stil + typsnitt för allt */
@@ -36,23 +34,23 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
             background-color: var(--sky-blue);
             margin: 0;
+            padding: 70px 15px 20px 15px;
+            box-sizing: border-box;
             color: var(--dark-grey);
             overscroll-behavior: none;
-            font-size: 10px; /* Basstorlek för pixligt typsnitt */
+            font-size: 10px;
         }
 
-        /* Poängtavla-knapp */
-        #scoreboard-button {
+        /* Knappar i hörn */
+        #scoreboard-button, #play-again-button {
             position: fixed;
             top: 15px;
-            right: 15px;
             padding: 8px 10px;
             font-size: 1.5em;
-            background-color: var(--yellow);
             color: var(--black);
             border: 3px solid var(--black);
             border-radius: 8px;
@@ -61,33 +59,44 @@
             z-index: 100;
             transition: all 0.1s ease;
         }
-         #scoreboard-button:hover {
-             background-color: var(--dark-yellow);
-             transform: translate(1px, 1px);
-             box-shadow: 2px 2px 0px var(--black);
-         }
-          #scoreboard-button:active {
-             transform: translate(3px, 3px);
-             box-shadow: 0px 0px 0px var(--black);
-         }
+        #scoreboard-button { right: 15px; background-color: var(--yellow); }
+        #play-again-button { left: 15px; background-color: var(--primary-blue); color: var(--snow-white); }
+         #scoreboard-button:hover { background-color: var(--dark-yellow); transform: translate(1px, 1px); box-shadow: 2px 2px 0px var(--black); }
+         #play-again-button:hover { background-color: #2563eb; transform: translate(1px, 1px); box-shadow: 2px 2px 0px var(--black); }
+         #scoreboard-button:active, #play-again-button:active { transform: translate(3px, 3px); box-shadow: 0px 0px 0px var(--black); }
+
+        /* Poängvisning (flyttad upp) */
+        #score-display {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: var(--primary-blue);
+            text-shadow: 2px 2px 0px var(--black);
+            order: -1;
+        }
 
         .game-container {
             position: relative;
             border: 5px solid var(--black);
-            background-color: var(--off-white); /* Fallback, men canvas ritar över */
+            background-color: var(--off-white);
             box-shadow: 5px 5px 0px var(--black);
             border-radius: 0;
             overflow: hidden;
-            margin-bottom: 15px;
-            margin-top: 60px;
+            margin-bottom: 25px;
+            width: 100%;
+            max-width: 410px;
+            box-sizing: border-box;
         }
 
         canvas {
             display: block;
+            width: 100%;
+            height: auto;
+            max-width: 400px;
+            margin: 0 auto;
             image-rendering: pixelated;
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
-            background-color: var(--off-white); /* Sätt bakgrundsfärg här ifall JS misslyckas */
+            background-color: var(--off-white);
         }
 
         /* Overlays (Start/Game Over) */
@@ -109,6 +118,16 @@
 
         #game-over-screen { display: none; }
 
+        /* Dölj element när endast omstartsknappen ska visas */
+        #game-over-screen.show-restart-only h1,
+        #game-over-screen.show-restart-only #final-score,
+        #game-over-screen.show-restart-only #save-score-form {
+            display: none;
+        }
+        #game-over-screen #restart-button { display: block; margin: 0 auto; }
+        #game-over-screen.show-restart-only #restart-button { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin-top: 0; }
+        #game-over-screen:not(.show-restart-only) #restart-button { display: none; }
+
         h1 {
             font-size: 1.8em;
             margin-bottom: 30px;
@@ -116,17 +135,8 @@
             line-height: 1.3;
             text-shadow: 2px 2px 0px var(--black);
         }
-
-         #game-over-screen h1 {
-             font-size: 1.5em;
-             color: var(--primary-red);
-             text-shadow: 2px 2px 0px var(--black);
-         }
-         #final-score {
-             font-size: 1.2em;
-             margin-bottom: 15px;
-             color: var(--dark-grey);
-         }
+         #game-over-screen h1 { font-size: 1.5em; color: var(--primary-red); text-shadow: 2px 2px 0px var(--black); }
+         #final-score { font-size: 1.2em; margin-bottom: 15px; color: var(--dark-grey); }
 
         /* Knappar */
         button, input[type="submit"] {
@@ -141,182 +151,77 @@
             transition: all 0.1s ease;
             margin-top: 15px;
             text-shadow: 1px 1px 0px var(--dark-red);
+            vertical-align: middle;
+            box-sizing: border-box; /* Viktigt för linjering */
         }
-
-        button:active, input[type="submit"]:active {
-            box-shadow: 0px 0px 0px var(--black);
-            transform: translate(3px, 3px);
-        }
-
-        button:hover, input[type="submit"]:hover {
-            background-color: var(--dark-red);
-        }
-
-        #start-button {
-             background-color: var(--primary-blue);
-             text-shadow: 1px 1px 0px #2563eb;
-        }
-         #start-button:hover { background-color: #2563eb; }
-
-         #restart-button {
-             background-color: var(--dark-grey);
-             text-shadow: 1px 1px 0px #2d3748;
-         }
-         #restart-button:hover { background-color: #2d3748; }
+        button:active, input[type="submit"]:active { box-shadow: 0px 0px 0px var(--black); transform: translate(3px, 3px); }
+        button:hover, input[type="submit"]:hover { background-color: var(--dark-red); }
+        #start-button { background-color: var(--primary-blue); text-shadow: 1px 1px 0px #2563eb; }
+        #start-button:hover { background-color: #2563eb; }
+        #restart-button { background-color: var(--primary-blue); text-shadow: 1px 1px 0px #2563eb; }
+        #restart-button:hover { background-color: #2563eb; }
 
         /* Poängtavla Modal */
-        #scoreboard-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 20;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            box-sizing: border-box;
-        }
-
-        #scoreboard-content {
-            background-color: var(--off-white);
-            padding: 20px 25px;
-            border-radius: 0;
-            width: 100%;
-            max-width: 350px;
-            max-height: 80%;
-            overflow-y: auto;
-            text-align: center;
-            border: 4px solid var(--black);
-            box-shadow: 5px 5px 0px var(--black);
-        }
-
-        #scoreboard-content h2 {
-             margin-bottom: 20px;
-             color: var(--primary-blue);
-             font-size: 1.4em;
-             text-shadow: 2px 2px 0px var(--black);
-        }
-
-        #scoreboard-list {
-            list-style: none;
-            padding: 0; margin: 0;
-            text-align: left;
-        }
-
-        #scoreboard-list li {
-            padding: 8px 2px;
-            border-bottom: 2px dashed var(--light-grey);
-            font-size: 1em;
-            display: flex;
-            justify-content: space-between;
-        }
-         #scoreboard-list li:last-child { border-bottom: none; }
-         #scoreboard-list li span:first-child {
-            color: var(--dark-grey);
-            margin-right: 10px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-         }
-          #scoreboard-list li span:last-child {
-             color: var(--primary-red);
-          }
-
-        #close-scoreboard {
-            margin-top: 20px;
-            background-color: var(--dark-grey);
-             text-shadow: 1px 1px 0px #2d3748;
-        }
+        #scoreboard-modal { /* ... (samma som innan) ... */ display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 20; align-items: center; justify-content: center; padding: 15px; box-sizing: border-box; }
+        #scoreboard-content { /* ... (samma som innan) ... */ background-color: var(--off-white); padding: 20px 25px; border-radius: 0; width: 100%; max-width: 350px; max-height: 80%; overflow-y: auto; text-align: center; border: 4px solid var(--black); box-shadow: 5px 5px 0px var(--black); }
+        #scoreboard-content h2 { /* ... (samma som innan) ... */ margin-bottom: 20px; color: var(--primary-blue); font-size: 1.4em; text-shadow: 2px 2px 0px var(--black); }
+        #scoreboard-list { /* ... (samma som innan) ... */ list-style: none; padding: 0; margin: 0; text-align: left; }
+        #scoreboard-list li { /* ... (samma som innan) ... */ padding: 8px 2px; border-bottom: 2px dashed var(--light-grey); font-size: 1em; display: flex; justify-content: space-between; }
+        #scoreboard-list li:last-child { border-bottom: none; }
+        #scoreboard-list li span:first-child { /* ... (samma som innan) ... */ color: var(--dark-grey); margin-right: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        #scoreboard-list li span:last-child { /* ... (samma som innan) ... */ color: var(--primary-red); }
+        #close-scoreboard { /* ... (samma som innan) ... */ margin-top: 20px; background-color: var(--dark-grey); text-shadow: 1px 1px 0px #2d3748; }
         #close-scoreboard:hover { background-color: #2d3748; }
 
-        /* Poängvisning under spelet */
-        #score-display {
-            font-size: 1.3em;
-            margin-top: 10px;
-            color: var(--primary-blue);
-            text-shadow: 2px 2px 0px var(--black);
-        }
-
-        /* Kontroller */
-        .controls {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 5px;
-            width: 150px;
-            margin-top: 15px;
-            display: none;
-        }
-
-        .control-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 45px;
-            height: 45px;
-            background-color: var(--dark-grey);
-            color: white;
-            border: 3px solid var(--black);
-            border-radius: 0;
-            font-size: 20px;
-            cursor: pointer;
-            box-shadow: 3px 3px 0px var(--black);
-            transition: all 0.1s ease;
-            user-select: none;
-            -webkit-user-select: none;
-            -ms-user-select: none;
-        }
-
-        .control-button:active {
-            box-shadow: 0px 0px 0px var(--black);
-            transform: translate(3px, 3px);
-            background-color: #2d3748;
-        }
-
-        #up-button { grid-column: 2; grid-row: 1; }
-        #left-button { grid-column: 1; grid-row: 2; }
-        #right-button { grid-column: 3; grid-row: 2; }
-        #down-button { grid-column: 2; grid-row: 3; }
+        /* Kontroller - Ny layout */
+        .controls { /* ... (samma som innan) ... */ display: grid; grid-template-columns: repeat(3, auto); grid-template-rows: auto auto; gap: 8px; width: auto; justify-items: center; margin-bottom: 20px; display: none; }
+        .control-button { /* ... (samma som innan) ... */ display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; background-color: var(--dark-grey); color: white; border: 3px solid var(--black); border-radius: 0; font-size: 24px; cursor: pointer; box-shadow: 3px 3px 0px var(--black); transition: all 0.1s ease; user-select: none; -webkit-user-select: none; -ms-user-select: none; }
+        .control-button:active { /* ... (samma som innan) ... */ box-shadow: 0px 0px 0px var(--black); transform: translate(3px, 3px); background-color: #2d3748; }
+        #left-button { grid-column: 1; grid-row: 1; } #up-button { grid-column: 2; grid-row: 1; } #right-button { grid-column: 3; grid-row: 1; } #down-button { grid-column: 2; grid-row: 2; }
 
         /* Footer */
-        footer {
-            margin-top: 20px;
-            font-size: 0.9em;
-            color: var(--dark-grey);
-        }
+        footer { /* ... (samma som innan) ... */ margin-top: auto; padding-top: 10px; font-size: 0.9em; color: var(--dark-grey); text-align: center; }
 
-        /* Inputfält */
+        /* Inputfält & Spara-knapp Linjering */
         input[type="text"] {
-            padding: 8px 10px;
+            padding: 10px; /* Samma padding som knapp */
             border: 3px solid var(--black);
             border-radius: 0;
-            margin-right: 8px;
+            margin: 0 8px 0 0; /* Ta bort margin-top */
             background-color: white;
             color: var(--dark-grey);
             box-shadow: inset 2px 2px 0px var(--light-grey);
-            font-size: 1em;
-            width: calc(100% - 115px);
-            max-width: 160px;
+            font-size: 1.1em; /* Samma fontstorlek som knapp */
+            width: calc(100% - 135px); /* Anpassa bredd baserat på knapp */
+            max-width: 180px;
+            box-sizing: border-box; /* Viktigt! */
+            vertical-align: middle;
+            line-height: normal; /* Återställ line-height */
+            height: auto; /* Ta bort fixerad höjd */
         }
          input[type="submit"] {
-             padding: 8px 15px;
-             font-size: 1em;
+             padding: 10px 15px; /* Samma padding */
+             font-size: 1.1em; /* Samma fontstorlek */
              width: auto;
+             margin-top: 0; /* Ta bort margin-top */
+             height: auto; /* Ta bort fixerad höjd */
+             vertical-align: middle;
+             /* box-sizing: border-box; Redan satt på alla knappar */
          }
          #save-score-form {
              display: flex;
-             align-items: center;
+             align-items: center; /* Centrera vertikalt */
              justify-content: center;
              width: 100%;
-             max-width: 280px;
+             max-width: 320px; /* Öka lite för att få plats */
              margin-top: 10px;
          }
     </style>
 </head>
 <body>
+    <button id="play-again-button">▶️</button> <button id="scoreboard-button">🏆</button>
 
-    <button id="scoreboard-button">🏆</button>
+    <div id="score-display">Poäng: 0</div>
 
     <div class="game-container">
         <div id="start-screen">
@@ -335,13 +240,11 @@
         <canvas id="gameCanvas" width="400" height="400"></canvas>
     </div>
 
-    <div id="score-display">Poäng: 0</div>
-
     <div class="controls" id="touch-controls">
-        <button class="control-button" id="up-button">▲</button>
-        <button class="control-button" id="left-button">◄</button>
-        <button class="control-button" id="right-button">►</button>
-        <button class="control-button" id="down-button">▼</button>
+        <button class="control-button" id="up-button">↑</button>
+        <button class="control-button" id="left-button">←</button>
+        <button class="control-button" id="right-button">→</button>
+        <button class="control-button" id="down-button">↓</button>
     </div>
 
     <div id="scoreboard-modal">
@@ -361,9 +264,10 @@
         const startScreen = document.getElementById('start-screen');
         const gameOverScreen = document.getElementById('game-over-screen');
         const startButton = document.getElementById('start-button');
-        const restartButton = document.getElementById('restart-button');
+        const restartButton = document.getElementById('restart-button'); // Återanvänds
         const finalScoreDisplay = document.getElementById('final-score');
         const scoreboardButton = document.getElementById('scoreboard-button');
+        const playAgainButton = document.getElementById('play-again-button');
         const scoreboardModal = document.getElementById('scoreboard-modal');
         const closeScoreboardButton = document.getElementById('close-scoreboard');
         const scoreboardList = document.getElementById('scoreboard-list');
@@ -373,11 +277,11 @@
 
         // Spelinställningar
         const gridSize = 20;
-        const pixelSize = 1; // Mat ritas nu med 1x1 pixlar inom 18x18
+        const pixelSize = 1;
         const canvasSize = 400;
         const tileCount = canvasSize / gridSize;
 
-        // Definiera färger direkt i JS för Canvas (med nyanser)
+        // Definiera färger direkt i JS för Canvas
         const colors = {
             primaryRed: '#ff0000', mediumRed: '#dd0000', darkRed: '#aa0000',
             primaryBlue: '#3b82f6', // För halsduk
@@ -385,10 +289,9 @@
             snowWhite: '#ffffff', // För halsduk
             lightWhite: '#eeeeee',
             offWhite: '#f0f0f0', slopeGrey1: '#d1d5db', slopeGrey2: '#e5e7eb',
-            yellow: '#ffdd00', lightYellow: '#ffee88', darkYellow: '#ccaa00',
-            lightGrey: '#cccccc', mediumGrey: '#aaaaaa', darkGrey: '#6b7280',
-            pixelArtBlue: '#33ccff', mediumBlue: '#00aaff', lightBlue: '#99ddff',
-            orange: '#ff9900', lightOrange: '#ffbb66', darkOrange: '#cc6600'
+            // Färger för öl-emoji (behövs ej för fillText)
+            // yellow: '#ffdd00', lightYellow: '#ffee88', darkYellow: '#ccaa00',
+            // lightGrey: '#cccccc', mediumGrey: '#aaaaaa', darkGrey: '#6b7280',
         };
 
         // Spelvariabler
@@ -399,22 +302,24 @@
         let gameLoopTimeout;
         let gameSpeed = 140;
         let isGameOver;
-        let currentFoodIndex = 0; // Inte så relevant nu
-        const foodTypes = ['beer']; // Endast öl nu!
+        let currentFoodIndex = 0;
+        const foodTypes = ['beer']; // Endast öl
 
         // --- Initiering och Start ---
         function initGame() { /* ... (samma som innan) ... */
-            isGameOver = false; score = 0; updateScoreDisplay();
+            clearTimeout(gameLoopTimeout); gameLoopTimeout = null; isGameOver = false; score = 0; updateScoreDisplay();
             skier = { x: Math.floor(tileCount / 2), y: Math.floor(tileCount / 2), dx: 0, dy: 0, scarf: [{ x: Math.floor(tileCount / 2), y: Math.floor(tileCount / 2) }] };
-            changingDirection = false; gameOverScreen.style.display = 'none'; startScreen.style.display = 'none';
-            placeFood(); clearTimeout(gameLoopTimeout); gameLoop();
+            changingDirection = false; gameOverScreen.style.display = 'none'; gameOverScreen.classList.remove('show-restart-only'); startScreen.style.display = 'none';
+            placeFood(); gameLoop();
         }
         startButton.addEventListener('click', initGame);
         restartButton.addEventListener('click', initGame);
+        playAgainButton.addEventListener('click', initGame);
 
         // --- Spelloop ---
         function gameLoop() { /* ... (samma som innan) ... */
             if (isGameOver) { showGameOver(); return; } changingDirection = false;
+            clearTimeout(gameLoopTimeout);
             gameLoopTimeout = setTimeout(() => {
                 clearAndDrawBackground(); drawFood(); moveSkier(); drawSkier(); checkCollision();
                 if (!isGameOver) { gameLoop(); } else { showGameOver(); }
@@ -429,100 +334,29 @@
             ctx.fillStyle = colors.slopeGrey2; const stripeWidth2 = gridSize * 2, gapWidth2 = gridSize * 5;
             for (let x = -canvasSize + gridSize*2; x < canvasSize; x += (stripeWidth2 + gapWidth2)) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + stripeWidth2, 0); ctx.lineTo(x + stripeWidth2 + canvasSize, canvasSize); ctx.lineTo(x + canvasSize, canvasSize); ctx.closePath(); ctx.fill(); }
         }
-
-        function drawSkier() {
-            // Rita halsduken med mönster
-            skier.scarf.forEach((segment, index) => {
-                if (index > 0) { // Rita inte huvudet här
-                    ctx.fillStyle = colors.black;
-                    ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
-                    let segmentColor;
-                    const patternIndex = index % 3;
-                    if (patternIndex === 1) { segmentColor = colors.primaryRed; }
-                    else if (patternIndex === 2) { segmentColor = colors.snowWhite; }
-                    else { segmentColor = colors.primaryBlue; }
-                    ctx.fillStyle = segmentColor;
-                    ctx.fillRect(segment.x * gridSize + 1, segment.y * gridSize + 1, gridSize - 2, gridSize - 2);
-                }
-            });
-
-            // Rita huvudet (oförändrat)
-            const headX = skier.scarf[0].x * gridSize; const headY = skier.scarf[0].y * gridSize;
-            ctx.fillStyle = colors.black; ctx.fillRect(headX, headY, gridSize, gridSize);
-            ctx.fillStyle = colors.primaryRed; ctx.fillRect(headX + 1, headY + 1, gridSize - 2, gridSize - 2);
-            ctx.fillStyle = colors.snowWhite; ctx.fillRect(headX + 4, headY + 5, 12, 4);
-            ctx.fillStyle = colors.black; ctx.fillRect(headX + 7, headY + 6, 2, 2); ctx.fillRect(headX + 11, headY + 6, 2, 2);
+        function drawSkier() { /* ... (samma som innan, med mönster) ... */
+            skier.scarf.forEach((segment, index) => { if (index > 0) { ctx.fillStyle = colors.black; ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize); let segmentColor; const patternIndex = index % 3; if (patternIndex === 1) { segmentColor = colors.primaryRed; } else if (patternIndex === 2) { segmentColor = colors.snowWhite; } else { segmentColor = colors.primaryBlue; } ctx.fillStyle = segmentColor; ctx.fillRect(segment.x * gridSize + 1, segment.y * gridSize + 1, gridSize - 2, gridSize - 2); } });
+            const headX = skier.scarf[0].x * gridSize; const headY = skier.scarf[0].y * gridSize; ctx.fillStyle = colors.black; ctx.fillRect(headX, headY, gridSize, gridSize); ctx.fillStyle = colors.primaryRed; ctx.fillRect(headX + 1, headY + 1, gridSize - 2, gridSize - 2); ctx.fillStyle = colors.snowWhite; ctx.fillRect(headX + 4, headY + 5, 12, 4); ctx.fillStyle = colors.black; ctx.fillRect(headX + 7, headY + 6, 2, 2); ctx.fillRect(headX + 11, headY + 6, 2, 2);
         }
 
-        // Helper function to draw a single pixel (respecting offset)
-        function drawPixel(x, y, color) {
-            const drawOffset = 1; // Rita 1px in från kanten
-             if (x >= 0 && x < gridSize - 2*drawOffset && y >= 0 && y < gridSize - 2*drawOffset) {
-                 ctx.fillStyle = color;
-                 ctx.fillRect(x + drawOffset, y + drawOffset, 1, 1);
-             }
-        }
+        // DrawPixel behövs inte längre för maten
+        // function drawPixel(x, y, color) { ... }
 
         function drawFood() {
-            // Endast öl ritas nu
+            // Ritar nu en öl-emoji
             if (food.type !== 'beer') return;
 
             const foodX = food.x * gridSize;
             const foodY = food.y * gridSize;
-            const p = pixelSize; // p är nu 1
-            const drawOffset = 1;
-            const drawWidth = gridSize - 2 * drawOffset; // 18
-            const drawHeight = gridSize - 2 * drawOffset; // 18
 
-            ctx.save();
-            ctx.translate(foodX, foodY);
+            // Sätt fontstorlek (lite mindre än gridSize för att passa bra)
+            // Vi behöver inte använda retro-fonten här, standard emoji-rendering är ok
+            ctx.font = `${gridSize * 0.9}px sans-serif`; // Anpassa storlek efter behov
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle'; // Centrera vertikalt
 
-            // Uppdaterad pixelkarta och färger för en högre, tydligare öl
-            let pixelMap = [];
-            let colorMap = {
-                k: colors.black, // Outline
-                y: colors.yellow, l: colors.lightYellow, d: colors.darkYellow, // Öl
-                w: colors.snowWhite, i: colors.lightWhite, // Skum
-                g: colors.lightGrey, m: colors.mediumGrey // Glas
-            };
-
-            // Högre ölglas (18x18 grid)
-            pixelMap = [
-                "------kkkkkk------", // 0 Skum outline topp
-                "-----kwwwwwwk-----", // 1 Skum
-                "----kwiiiiiiwk----", // 2 Skum
-                "----kwiiiiiiwk----", // 3 Skum
-                "---kgllllllllgkkk-", // 4 Glas kant + Handtag topp
-                "--kglllllllllgkkk-", // 5
-                "--kglyyyyyyyylgkkk-", // 6 Öl start
-                "--kglyyyyyyyylgk-k-", // 7
-                "--kglyyyyyyyylgk-k-", // 8
-                "--kglyyyyyyyylgk-k-", // 9
-                "--kglyyyyyyyylgk-k-", // 10
-                "--kglyyyyyyyylgkkk-", // 11
-                "--kgldyyyyyyydlgkkk-", // 12 Skugga öl
-                "--kgddddddddddgk-k-", // 13 Mörkare öl botten
-                "--kgmggggggggmgk-k-", // 14 Glas botten/skugga
-                "--kgkkkkkkkkkgkkk-", // 15 Glas botten outline + handtag
-                "---kkkkkkkkkkk----", // 16 Outline botten
-                "------------------", // 17
-            ];
-
-
-             // Rita från pixelMap
-             for (let y = 0; y < pixelMap.length; y++) {
-                 if (y >= drawHeight) continue;
-                 for (let x = 0; x < pixelMap[y].length; x++) {
-                      if (x >= drawWidth) continue;
-                     const char = pixelMap[y][x];
-                     if (char !== '-' && colorMap[char]) {
-                         ctx.fillStyle = colorMap[char];
-                         ctx.fillRect(x + drawOffset, y + drawOffset, 1, 1);
-                     }
-                 }
-             }
-
-            ctx.restore();
+            // Rita emojin centrerat i rutan
+            ctx.fillText('🍺', foodX + gridSize / 2, foodY + gridSize / 2);
         }
 
 
@@ -530,14 +364,29 @@
         function moveSkier() { /* ... */ head = { x: skier.scarf[0].x + skier.dx, y: skier.scarf[0].y + skier.dy }; skier.scarf.unshift(head); didEatFood = skier.scarf[0].x === food.x && skier.scarf[0].y === food.y; if (didEatFood) { score += 10; updateScoreDisplay(); placeFood(); } else { skier.scarf.pop(); } }
         function placeFood() { /* ... */ while (true) { newFoodX = Math.floor(Math.random() * tileCount); newFoodY = Math.floor(Math.random() * tileCount); collision = false; for (let i = 0; i < skier.scarf.length; i++) { if (newFoodX === skier.scarf[i].x && newFoodY === skier.scarf[i].y) { collision = true; break; } } if (!collision) break; } foodType = foodTypes[0]; /* Alltid 'beer' */ food = { x: newFoodX, y: newFoodY, type: foodType }; }
         function checkCollision() { /* ... */ head = skier.scarf[0]; if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) { isGameOver = true; return; } for (let i = 1; i < skier.scarf.length; i++) { if (head.x === skier.scarf[i].x && head.y === skier.scarf[i].y) { isGameOver = true; return; } } }
-        function showGameOver() { /* ... */ clearTimeout(gameLoopTimeout); finalScoreDisplay.textContent = `Din poäng: ${score}`; gameOverScreen.style.display = 'flex'; playerNameInput.value = ''; playerNameInput.focus(); }
+        function showGameOver() { /* ... */ clearTimeout(gameLoopTimeout); gameLoopTimeout = null; finalScoreDisplay.textContent = `Din poäng: ${score}`; gameOverScreen.classList.remove('show-restart-only'); gameOverScreen.style.display = 'flex'; playerNameInput.value = ''; playerNameInput.focus(); }
         function updateScoreDisplay() { /* ... */ scoreDisplay.textContent = `Poäng: ${score}`; }
 
         // --- Kontroller (samma) ---
-        document.addEventListener('keydown', handleKeyDown); function handleKeyDown(event) { if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) { event.preventDefault(); } changeDirection(event.keyCode); } function changeDirection(keyCode) { if (changingDirection || isGameOver) return; const LEFT_KEY = 37, RIGHT_KEY = 39, UP_KEY = 38, DOWN_KEY = 40; const goingUp = skier.dy === -1, goingDown = skier.dy === 1; const goingRight = skier.dx === 1, goingLeft = skier.dx === -1; if (skier.dx === 0 && skier.dy === 0 && [LEFT_KEY, RIGHT_KEY, UP_KEY, DOWN_KEY].includes(keyCode)) { if (keyCode === LEFT_KEY) skier.dx = -1; else if (keyCode === RIGHT_KEY) skier.dx = 1; else if (keyCode === UP_KEY) skier.dy = -1; else if (keyCode === DOWN_KEY) skier.dy = 1; changingDirection = true; return; } if (keyCode === LEFT_KEY && !goingRight) { skier.dx = -1; skier.dy = 0; changingDirection = true; } else if (keyCode === UP_KEY && !goingDown) { skier.dx = 0; skier.dy = -1; changingDirection = true; } else if (keyCode === RIGHT_KEY && !goingLeft) { skier.dx = 1; skier.dy = 0; changingDirection = true; } else if (keyCode === DOWN_KEY && !goingUp) { skier.dx = 0; skier.dy = 1; changingDirection = true; } } function isTouchDevice() { try { document.createEvent("TouchEvent"); return true; } catch (e) { return false; } } if (isTouchDevice()) { touchControls.style.display = 'grid'; document.getElementById('up-button').addEventListener('touchstart', (e) => { e.preventDefault(); changeDirection(38); }); document.getElementById('down-button').addEventListener('touchstart', (e) => { e.preventDefault(); changeDirection(40); }); document.getElementById('left-button').addEventListener('touchstart', (e) => { e.preventDefault(); changeDirection(37); }); document.getElementById('right-button').addEventListener('touchstart', (e) => { e.preventDefault(); changeDirection(39); }); }
+        document.addEventListener('keydown', handleKeyDown); function handleKeyDown(event) { if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) { event.preventDefault(); } changeDirection(event.keyCode); } function changeDirection(keyCode) { if (changingDirection || isGameOver) return; const LEFT_KEY = 37, RIGHT_KEY = 39, UP_KEY = 38, DOWN_KEY = 40; const goingUp = skier.dy === -1, goingDown = skier.dy === 1; const goingRight = skier.dx === 1, goingLeft = skier.dx === -1; if (skier.dx === 0 && skier.dy === 0 && [LEFT_KEY, RIGHT_KEY, UP_KEY, DOWN_KEY].includes(keyCode)) { if (keyCode === LEFT_KEY) skier.dx = -1; else if (keyCode === RIGHT_KEY) skier.dx = 1; else if (keyCode === UP_KEY) skier.dy = -1; else if (keyCode === DOWN_KEY) skier.dy = 1; changingDirection = true; return; } if (keyCode === LEFT_KEY && !goingRight) { skier.dx = -1; skier.dy = 0; changingDirection = true; } else if (keyCode === UP_KEY && !goingDown) { skier.dx = 0; skier.dy = -1; changingDirection = true; } else if (keyCode === RIGHT_KEY && !goingLeft) { skier.dx = 1; skier.dy = 0; changingDirection = true; } else if (keyCode === DOWN_KEY && !goingUp) { skier.dx = 0; skier.dy = 1; changingDirection = true; } }
+        function isTouchDevice() { try { document.createEvent("TouchEvent"); return true; } catch (e) { return false; } }
+        if (isTouchDevice()) {
+             touchControls.style.display = 'grid'; // Visa kontroller
+             document.getElementById('up-button').addEventListener('touchstart', (e) => { e.preventDefault(); changeDirection(38); });
+             document.getElementById('down-button').addEventListener('touchstart', (e) => { e.preventDefault(); changeDirection(40); });
+             document.getElementById('left-button').addEventListener('touchstart', (e) => { e.preventDefault(); changeDirection(37); });
+             document.getElementById('right-button').addEventListener('touchstart', (e) => { e.preventDefault(); changeDirection(39); });
+         }
 
-        // --- Poängtavla (samma) ---
-        function getHighScores() { const scores = localStorage.getItem('skiGameHighScores_v2'); return scores ? JSON.parse(scores) : []; } function saveHighScore(name, score) { const scores = getHighScores(); scores.push({ name, score }); scores.sort((a, b) => b.score - a.score); scores.splice(10); localStorage.setItem('skiGameHighScores_v2', JSON.stringify(scores)); } function displayHighScores() { const scores = getHighScores(); scoreboardList.innerHTML = ''; if (scores.length === 0) { scoreboardList.innerHTML = '<li>Inga poäng!</li>'; } else { scores.forEach((entry, index) => { const li = document.createElement('li'); li.innerHTML = `<span>${index + 1}. ${entry.name}</span><span>${entry.score} p</span>`; scoreboardList.appendChild(li); }); } } scoreboardButton.addEventListener('click', () => { if (!isGameOver && startScreen.style.display === 'none') { clearTimeout(gameLoopTimeout); } displayHighScores(); scoreboardModal.style.display = 'flex'; }); closeScoreboardButton.addEventListener('click', () => { scoreboardModal.style.display = 'none'; if (!isGameOver && startScreen.style.display === 'none') { gameLoop(); } }); saveScoreForm.addEventListener('submit', (e) => { e.preventDefault(); const playerName = playerNameInput.value.trim(); if (playerName) { saveHighScore(playerName, score); gameOverScreen.style.display = 'none'; displayHighScores(); scoreboardModal.style.display = 'flex'; } else { playerNameInput.focus(); } });
+        // --- Poängtavla ---
+        function getHighScores() { const scores = localStorage.getItem('skiGameHighScores_v2'); return scores ? JSON.parse(scores) : []; }
+        function saveHighScore(name, score) { const scores = getHighScores(); scores.push({ name, score }); scores.sort((a, b) => b.score - a.score); scores.splice(10); localStorage.setItem('skiGameHighScores_v2', JSON.stringify(scores)); }
+        function displayHighScores() { const scores = getHighScores(); scoreboardList.innerHTML = ''; if (scores.length === 0) { scoreboardList.innerHTML = '<li>Inga poäng!</li>'; } else { scores.forEach((entry, index) => { const li = document.createElement('li'); li.innerHTML = `<span>${index + 1}. ${entry.name}</span><span>${entry.score} p</span>`; scoreboardList.appendChild(li); }); } }
+
+        // Uppdaterad logik för knappar
+        scoreboardButton.addEventListener('click', () => { if (!isGameOver && startScreen.style.display === 'none' && gameLoopTimeout) { clearTimeout(gameLoopTimeout); gameLoopTimeout = null; } displayHighScores(); scoreboardModal.style.display = 'flex'; });
+        closeScoreboardButton.addEventListener('click', () => { scoreboardModal.style.display = 'none'; if (gameOverScreen.classList.contains('show-restart-only')) { gameOverScreen.style.display = 'flex'; } else if (!isGameOver && startScreen.style.display === 'none' && !gameLoopTimeout) { gameLoop(); } });
+        saveScoreForm.addEventListener('submit', (e) => { e.preventDefault(); const playerName = playerNameInput.value.trim(); if (playerName) { saveHighScore(playerName, score); gameOverScreen.classList.add('show-restart-only'); gameOverScreen.style.display = 'none'; displayHighScores(); scoreboardModal.style.display = 'flex'; } else { playerNameInput.focus(); } });
 
         // Kör igång när sidan laddats
         clearAndDrawBackground();
