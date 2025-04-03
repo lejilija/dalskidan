@@ -13,16 +13,15 @@
             --retro-font: 'Press Start 2P', cursive;
             --primary-red: #ff0000;
             --dark-red: #cc0000;
-            --primary-blue: #3b82f6; /* Blå för halsduk */
+            --primary-blue: #3b82f6;
             --dark-grey: #4a5568;
             --black: #000000;
-            --light-grey: #a0aec0; /* Behålls för UI */
-            --snow-white: #ffffff; /* Vit för halsduk & pilar */
+            --light-grey: #a0aec0;
+            --snow-white: #ffffff;
             --off-white: #f0f0f0;
             --sky-blue: #bee3f8;
             --yellow: #ffcc00; /* För poängknapp */
             --dark-yellow: #eab308;
-            /* Orange, Blå nyanser, Gröna nyanser etc borttagna då de inte används */
         }
 
         /* Grundläggande stil + typsnitt för allt */
@@ -45,12 +44,12 @@
             font-size: 10px;
         }
 
-        /* Knappar i hörn */
+        /* Knappar i hörn - nu med text */
         #scoreboard-button, #play-again-button {
             position: fixed;
             top: 15px;
-            padding: 8px 10px;
-            font-size: 1.5em;
+            padding: 10px 12px;
+            font-size: 1em;
             color: var(--black);
             border: 3px solid var(--black);
             border-radius: 8px;
@@ -58,9 +57,7 @@
             cursor: pointer;
             z-index: 100;
             transition: all 0.1s ease;
-            /* Behåll text-align center ifall vi använder text-ikoner igen */
-             text-align: center;
-             line-height: 1; /* Justera för ikon-centrering */
+            text-align: center;
         }
         #scoreboard-button { right: 15px; background-color: var(--yellow); }
         #play-again-button { left: 15px; background-color: var(--primary-blue); color: var(--snow-white); }
@@ -179,24 +176,23 @@
         /* Kontroller - Ny layout */
         .controls { /* ... (samma som innan) ... */ display: grid; grid-template-columns: repeat(3, auto); grid-template-rows: auto auto; gap: 8px; width: auto; justify-items: center; margin-bottom: 20px; display: none; }
         .control-button {
-            display: flex; /* Behåll flex för ev. framtida ikoncentrering */
+            display: flex;
             align-items: center;
             justify-content: center;
             width: 50px;
             height: 50px;
             background-color: var(--dark-grey);
-            color: white; /* Färgen på pilen sätts i ::before */
+            color: white;
             border: 3px solid var(--black);
             border-radius: 0;
-            /* font-size behövs ej för CSS-pilar */
             cursor: pointer;
             box-shadow: 3px 3px 0px var(--black);
             transition: all 0.1s ease;
             user-select: none;
             -webkit-user-select: none;
             -ms-user-select: none;
-            position: relative; /* För att positionera ::before */
-            overflow: hidden; /* Dölj ev. delar av pilen som går utanför */
+            position: relative;
+            overflow: hidden;
         }
         .control-button:active { /* ... (samma som innan) ... */ box-shadow: 0px 0px 0px var(--black); transform: translate(3px, 3px); background-color: #2d3748; }
 
@@ -206,31 +202,17 @@
             position: absolute;
             width: 0;
             height: 0;
-            /* Centrera pilen */
             top: 50%;
             left: 50%;
-            /* Standardpil pekar höger */
-            border-top: 10px solid transparent; /* Justera storlek här */
+            border-top: 10px solid transparent;
             border-bottom: 10px solid transparent;
-            border-left: 15px solid var(--snow-white); /* Pilens färg */
+            border-left: 15px solid var(--snow-white);
             border-right: 0;
-            /* Startposition för transform */
             transform: translate(-50%, -50%);
         }
-
-        /* Rotera pilen för olika riktningar */
-        #left-button::before {
-            transform: translate(-50%, -50%) rotate(180deg);
-        }
-        #up-button::before {
-             /* Justera translate för upp/ner pga triangelns bas */
-            transform: translate(-50%, -60%) rotate(-90deg);
-        }
-        #down-button::before {
-             /* Justera translate för upp/ner pga triangelns bas */
-            transform: translate(-50%, -40%) rotate(90deg);
-        }
-
+        #left-button::before { transform: translate(-50%, -50%) rotate(180deg); }
+        #up-button::before { transform: translate(-50%, -60%) rotate(-90deg); }
+        #down-button::before { transform: translate(-50%, -40%) rotate(90deg); }
 
         /* Grid placering för ny layout */
         #left-button { grid-column: 1; grid-row: 1; } #up-button { grid-column: 2; grid-row: 1; } #right-button { grid-column: 3; grid-row: 1; } #down-button { grid-column: 2; grid-row: 2; }
@@ -275,7 +257,8 @@
     </style>
 </head>
 <body>
-    <button id="play-again-button">▶️</button> <button id="scoreboard-button">🏆</button>
+    <button id="play-again-button">Spela</button>
+    <button id="scoreboard-button">Highscore</button>
 
     <div id="score-display">Poäng: 0</div>
 
@@ -339,13 +322,12 @@
 
         // Definiera färger direkt i JS för Canvas
         const colors = {
-            primaryRed: '#ff0000', mediumRed: '#dd0000', darkRed: '#aa0000',
-            primaryBlue: '#3b82f6', // För halsduk
+            primaryRed: '#ff0000', // För halsduk & huvud & fransar
             black: '#000000',
-            snowWhite: '#ffffff', // För halsduk
-            lightWhite: '#eeeeee',
+            snowWhite: '#ffffff', // För glasögon
             offWhite: '#f0f0f0', slopeGrey1: '#d1d5db', slopeGrey2: '#e5e7eb',
-            // Färger för öl-emoji (behövs ej för fillText)
+            primaryBlue: '#3b82f6', // För UI-knappar
+            yellow: '#ffcc00',    // För UI-knappar
         };
 
         // Spelvariabler
@@ -388,24 +370,127 @@
             ctx.fillStyle = colors.slopeGrey2; const stripeWidth2 = gridSize * 2, gapWidth2 = gridSize * 5;
             for (let x = -canvasSize + gridSize*2; x < canvasSize; x += (stripeWidth2 + gapWidth2)) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + stripeWidth2, 0); ctx.lineTo(x + stripeWidth2 + canvasSize, canvasSize); ctx.lineTo(x + canvasSize, canvasSize); ctx.closePath(); ctx.fill(); }
         }
-        function drawSkier() { /* ... (samma som innan, med mönster) ... */
-            skier.scarf.forEach((segment, index) => { if (index > 0) { ctx.fillStyle = colors.black; ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize); let segmentColor; const patternIndex = index % 3; if (patternIndex === 1) { segmentColor = colors.primaryRed; } else if (patternIndex === 2) { segmentColor = colors.snowWhite; } else { segmentColor = colors.primaryBlue; } ctx.fillStyle = segmentColor; ctx.fillRect(segment.x * gridSize + 1, segment.y * gridSize + 1, gridSize - 2, gridSize - 2); } });
-            const headX = skier.scarf[0].x * gridSize; const headY = skier.scarf[0].y * gridSize; ctx.fillStyle = colors.black; ctx.fillRect(headX, headY, gridSize, gridSize); ctx.fillStyle = colors.primaryRed; ctx.fillRect(headX + 1, headY + 1, gridSize - 2, gridSize - 2); ctx.fillStyle = colors.snowWhite; ctx.fillRect(headX + 4, headY + 5, 12, 4); ctx.fillStyle = colors.black; ctx.fillRect(headX + 7, headY + 6, 2, 2); ctx.fillRect(headX + 11, headY + 6, 2, 2);
+
+        // Hjälpfunktion för att rita fransar med outline
+        function drawTassels(startX, startY, direction, color, tasselWidth, tasselHeight, spacing, count) {
+            const outlineColor = colors.black;
+            const fillColor = color;
+            // Beräkna total bredd/höjd baserat på riktning för centrering
+            let totalVisualSize;
+            if (direction === 'up' || direction === 'down') {
+                totalVisualSize = count * tasselWidth + (count - 1) * spacing;
+            } else { // left or right
+                totalVisualSize = count * tasselWidth + (count - 1) * spacing; // Höjden på fransarna (tasselHeight) är nu bredden, tasselWidth är höjden
+            }
+             const startOffset = Math.floor((gridSize - totalVisualSize) / 2); // Centrera fransarna
+
+            for (let i = 0; i < count; i++) {
+                let tasselX, tasselY, width, height;
+                let outlineX, outlineY, outlineWidth, outlineHeight;
+
+                switch (direction) {
+                    case 'down':
+                        width = tasselWidth; height = tasselHeight;
+                        tasselX = startX + startOffset + i * (tasselWidth + spacing);
+                        tasselY = startY + gridSize -1;
+                        outlineX = tasselX - 1; outlineY = tasselY - 1;
+                        outlineWidth = width + 2; outlineHeight = height + 2;
+                        break;
+                    case 'up':
+                        width = tasselWidth; height = tasselHeight;
+                        tasselX = startX + startOffset + i * (tasselWidth + spacing);
+                        tasselY = startY - tasselHeight + 1;
+                        outlineX = tasselX - 1; outlineY = tasselY - 1;
+                        outlineWidth = width + 2; outlineHeight = height + 2;
+                        break;
+                    case 'right':
+                        width = tasselHeight; height = tasselWidth; // Swap
+                        tasselX = startX + gridSize -1;
+                        tasselY = startY + startOffset + i * (tasselWidth + spacing); // Använd tasselWidth för vertikal spacing
+                        outlineX = tasselX - 1; outlineY = tasselY - 1;
+                        outlineWidth = width + 2; outlineHeight = height + 2;
+                        break;
+                    case 'left':
+                        width = tasselHeight; height = tasselWidth; // Swap
+                        tasselX = startX - tasselHeight + 1;
+                        tasselY = startY + startOffset + i * (tasselWidth + spacing); // Använd tasselWidth för vertikal spacing
+                        outlineX = tasselX - 1; outlineY = tasselY - 1;
+                        outlineWidth = width + 2; outlineHeight = height + 2;
+                        break;
+                    default: return;
+                }
+                 // Rita outline först
+                 ctx.fillStyle = outlineColor;
+                 ctx.fillRect(outlineX, outlineY, outlineWidth, outlineHeight);
+                 // Rita fyllning ovanpå
+                 ctx.fillStyle = fillColor;
+                 ctx.fillRect(tasselX, tasselY, width, height);
+            }
+        }
+
+
+        function drawSkier() {
+            const head = skier.scarf[0];
+            const headX = head.x * gridSize;
+            const headY = head.y * gridSize;
+
+            // Rita halsduken (nu helt röd)
+            skier.scarf.forEach((segment, index) => {
+                if (index > 0) { // Rita inte huvudet här
+                    const isLastSegment = index === skier.scarf.length - 1;
+                    const segX = segment.x * gridSize;
+                    const segY = segment.y * gridSize;
+
+                    // Svart bakgrund för outline
+                    ctx.fillStyle = colors.black;
+                    ctx.fillRect(segX, segY, gridSize, gridSize);
+
+                    // Rita röd fyllning ovanpå, lite mindre
+                    ctx.fillStyle = colors.primaryRed; // Alltid röd nu
+                    ctx.fillRect(segX + 1, segY + 1, gridSize - 2, gridSize - 2);
+
+                    // Rita BAKRE fransar på sista segmentet
+                    if (skier.scarf.length > 1 && isLastSegment) {
+                        let tasselDirection = 'up'; // Default
+                        if (skier.dx === 1) tasselDirection = 'left';
+                        else if (skier.dx === -1) tasselDirection = 'right';
+                        else if (skier.dy === 1) tasselDirection = 'up';
+                        else if (skier.dy === -1) tasselDirection = 'down';
+
+                        // Anropa med nya parametrar: 5 smalare fransar (bredd 1, mellanrum 3)
+                        drawTassels(segX, segY, tasselDirection, colors.primaryRed, 1, 10, 3, 5);
+                    }
+                }
+            });
+
+            // Rita huvudet
+            ctx.fillStyle = colors.black; ctx.fillRect(headX, headY, gridSize, gridSize);
+            ctx.fillStyle = colors.primaryRed; ctx.fillRect(headX + 1, headY + 1, gridSize - 2, gridSize - 2);
+            ctx.fillStyle = colors.snowWhite; ctx.fillRect(headX + 4, headY + 5, 12, 4);
+            ctx.fillStyle = colors.black; ctx.fillRect(headX + 7, headY + 6, 2, 2); ctx.fillRect(headX + 11, headY + 6, 2, 2);
+
+            // Rita FRÄMRE fransar på huvudet
+            if (skier.scarf.length > 0) {
+                 let tasselDirection = 'down'; // Default
+                 if (skier.dx === 1) tasselDirection = 'right';
+                 else if (skier.dx === -1) tasselDirection = 'left';
+                 else if (skier.dy === 1) tasselDirection = 'down';
+                 else if (skier.dy === -1) tasselDirection = 'up';
+
+                 if (!(skier.dx === 0 && skier.dy === 0 && skier.scarf.length === 1)) {
+                     // Anropa med nya parametrar: 5 smalare fransar (bredd 1, mellanrum 3)
+                    drawTassels(headX, headY, tasselDirection, colors.primaryRed, 1, 10, 3, 5);
+                 }
+            }
         }
 
         function drawFood() {
             // Ritar nu en öl-emoji
             if (food.type !== 'beer') return;
-
-            const foodX = food.x * gridSize;
-            const foodY = food.y * gridSize;
-
-            // Sätt fontstorlek (lite mindre än gridSize för att passa bra)
-            ctx.font = `${gridSize * 0.9}px sans-serif`; // Anpassa storlek efter behov
+            const foodX = food.x * gridSize; const foodY = food.y * gridSize;
+            ctx.font = `${gridSize * 0.9}px sans-serif`;
             ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle'; // Centrera vertikalt
-
-            // Rita emojin centrerat i rutan
+            ctx.textBaseline = 'middle';
             ctx.fillText('🍺', foodX + gridSize / 2, foodY + gridSize / 2);
         }
 
