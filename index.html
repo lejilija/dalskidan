@@ -241,10 +241,8 @@
     </div>
 
     <div class="controls" id="touch-controls">
-        <button class="control-button" id="up-button">↑</button>
-        <button class="control-button" id="left-button">←</button>
-        <button class="control-button" id="right-button">→</button>
-        <button class="control-button" id="down-button">↓</button>
+        <button class="control-button" id="up-button">^</button>
+        <button class="control-button" id="left-button">&lt;</button> <button class="control-button" id="right-button">&gt;</button> <button class="control-button" id="down-button">v</button>
     </div>
 
     <div id="scoreboard-modal">
@@ -290,8 +288,6 @@
             lightWhite: '#eeeeee',
             offWhite: '#f0f0f0', slopeGrey1: '#d1d5db', slopeGrey2: '#e5e7eb',
             // Färger för öl-emoji (behövs ej för fillText)
-            // yellow: '#ffdd00', lightYellow: '#ffee88', darkYellow: '#ccaa00',
-            // lightGrey: '#cccccc', mediumGrey: '#aaaaaa', darkGrey: '#6b7280',
         };
 
         // Spelvariabler
@@ -339,9 +335,6 @@
             const headX = skier.scarf[0].x * gridSize; const headY = skier.scarf[0].y * gridSize; ctx.fillStyle = colors.black; ctx.fillRect(headX, headY, gridSize, gridSize); ctx.fillStyle = colors.primaryRed; ctx.fillRect(headX + 1, headY + 1, gridSize - 2, gridSize - 2); ctx.fillStyle = colors.snowWhite; ctx.fillRect(headX + 4, headY + 5, 12, 4); ctx.fillStyle = colors.black; ctx.fillRect(headX + 7, headY + 6, 2, 2); ctx.fillRect(headX + 11, headY + 6, 2, 2);
         }
 
-        // DrawPixel behövs inte längre för maten
-        // function drawPixel(x, y, color) { ... }
-
         function drawFood() {
             // Ritar nu en öl-emoji
             if (food.type !== 'beer') return;
@@ -350,7 +343,6 @@
             const foodY = food.y * gridSize;
 
             // Sätt fontstorlek (lite mindre än gridSize för att passa bra)
-            // Vi behöver inte använda retro-fonten här, standard emoji-rendering är ok
             ctx.font = `${gridSize * 0.9}px sans-serif`; // Anpassa storlek efter behov
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle'; // Centrera vertikalt
